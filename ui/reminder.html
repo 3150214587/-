@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>催水通知</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { background: transparent; }
+  .stage {
+    position: absolute; inset: 0;
+    display: flex; align-items: flex-end;
+    padding: 34px 18px 18px;
+  }
+  .dialog {
+    position: relative; width: 100%;
+    padding: 36px 28px 20px;
+    background: #fdf6e0; border-radius: 28px;
+    box-shadow: 0 12px 28px rgba(61,52,40,.32), inset 0 0 0 3px rgba(255,255,255,.65);
+    opacity: 0; transform: translateY(30px) scale(.92);
+  }
+  .dialog.in { animation: enter .42s var(--ease) forwards; }
+  .dialog.out { animation: leave .28s var(--ease) forwards; }
+  @keyframes enter {
+    0% { opacity: 0; transform: translateY(30px) scale(.92); }
+    62% { opacity: 1; transform: translateY(-6px) scale(1.02); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes leave {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(26px) scale(.94); }
+  }
+  .nametag { position: absolute; top: -15px; left: 16px; }
+  .nametag .drop { margin-right: 3px; }
+  .closebtn {
+    position: absolute; top: -10px; right: -6px;
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 2px solid var(--faint); background: #fffdf4; color: var(--sub);
+    font: 800 16px var(--font); cursor: pointer; line-height: 1;
+    box-shadow: 0 2px 6px rgba(61,52,40,.18); transition: all .15s var(--ease);
+  }
+  .closebtn:hover { background: var(--danger); border-color: var(--danger); color: #fff; transform: rotate(90deg); }
+  .text {
+    min-height: 88px;
+    color: #6b5333; font-size: 18px; line-height: 1.65; font-weight: 700; letter-spacing: .015em;
+  }
+  .cursor {
+    display: inline-block; width: 3px; height: 1em; margin-left: 2px;
+    background: var(--orange); vertical-align: -.12em; animation: blink .8s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .reminder-meta {
+    display: flex; gap: 8px; flex-wrap: wrap; min-height: 30px; margin-top: 7px;
+    opacity: 0; transform: translateY(5px); transition: all .25s var(--ease);
+  }
+  .reminder-meta.show { opacity: 1; transform: translateY(0); }
+  .meta-chip {
+    display: inline-flex; align-items: center; height: 29px; padding: 0 12px;
+    border: 1.5px solid #dfd0a6; border-radius: 999px; background: #fffdf4;
+    color: var(--sub); font-size: 12px; font-weight: 800;
+  }
+  .meta-chip.walk { border-color: #b8dca5; color: #66933c; background: #f6ffe9; }
+  .btns {
+    display: flex; gap: 12px; justify-content: flex-end;
+    margin-top: 14px; opacity: 0; transform: translateY(8px);
+    transition: all .3s var(--ease); pointer-events: none;
+  }
+  .btns.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .confirm {
+    display: none; align-items: center; justify-content: space-between; gap: 10px;
+    min-height: 60px; margin-top: 14px; padding: 10px 11px 10px 15px;
+    border: 2px solid var(--mint); border-radius: 17px; background: #f0fffa;
+    color: var(--ink); font-size: 14px; font-weight: 800;
+  }
+  .confirm.show { display: flex; animation: confirmIn .3s var(--ease); }
+  @keyframes confirmIn { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+  .undo-wrap { display: flex; align-items: center; gap: 6px; }
+  .undo-btn {
+    border: none; border-radius: 999px; padding: 8px 14px;
+    background: var(--orange); color: #fff; font: 900 13px var(--font); cursor: pointer;
+  }
+  .confirm small { min-width: 22px; color: var(--faint); font-size: 11px; }
+  .deco {
+    position: absolute; right: 22px; top: -22px;
+    animation: bob 2.6s ease-in-out infinite;
+    filter: drop-shadow(0 4px 6px rgba(17,168,155,.3));
+  }
+  @keyframes bob { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-7px) rotate(4deg); } }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="dialog" id="dialog">
+    <svg class="deco" viewBox="0 0 120 120" width="52" height="52" aria-hidden="true">
+      <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#5fdfd2"/><stop offset="1" stop-color="#0fa295"/>
+      </linearGradient></defs>
+      <path d="M60,8 C66,24 94,50 94,72 A34,34 0 1,1 26,72 C26,50 54,24 60,8 Z"
+            fill="url(#g2)" stroke="#fffdf4" stroke-width="6" stroke-linejoin="round"/>
+      <ellipse cx="46" cy="58" rx="7" ry="11" fill="#fff" opacity=".9" transform="rotate(-14 46 58)"/>
+      <circle cx="48" cy="76" r="4" fill="#4a3a28"/><circle cx="72" cy="76" r="4" fill="#4a3a28"/>
+      <path d="M52,84 q8,7 16,0" stroke="#4a3a28" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div class="nametag"><span class="drop">💧</span>水分補給課</div>
+    <button class="closebtn" id="btnClose" title="关闭并按正常间隔再提醒">×</button>
+    <div class="text"><span id="txt"></span><span class="cursor" id="cursor"></span></div>
+    <div class="reminder-meta" id="meta">
+      <span class="meta-chip" id="cupTip">💧 本次一杯</span>
+      <span class="meta-chip walk" id="walkTip">🚶 再走动 1–2 分钟</span>
+    </div>
+    <div class="btns" id="btns">
+      <button class="btn btn-ghost mid" id="btnSnooze">再苟 5 分钟</button>
+      <button class="btn btn-primary mid" id="btnDrink">喝了！（+200ml）</button>
+    </div>
+    <div class="confirm" id="confirm">
+      <span id="confirmText">已记下一杯，做得好。</span>
+      <span class="undo-wrap"><button class="undo-btn" id="btnUndo">撤销</button><small id="undoCount">6s</small></span>
+    </div>
+  </div>
+</div>
+<script src="sound.js"></script>
+<script src="reminder.js"></script>
+</body>
+</html>
