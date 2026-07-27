@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.electron-dev/
+.pack-stage/
+.shot-data/
+.shots/
+.new-app*.asar
+.release-work/
+.tmp-*/
+*.log
