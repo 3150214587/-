@@ -21,9 +21,25 @@
 3. 三张真实应用截图：主界面、首次设置或展开设置、催水提醒弹窗。
 4. 中文说明：功能、运行方式、数据与隐私、项目结构、测试和打包、免责声明。
 5. English description: overview, features, screenshots, getting started, privacy, structure, testing and packaging, disclaimer.
-6. MIT 许可证说明。
+6. 面向零基础用户的源码运行与 Windows 打包教程入口。
+7. MIT 许可证说明。
 
 英文文案解释 `GokuGoku` 是日语中“大口喝水、咕嘟咕嘟”的拟声词，避免项目名含义不明。
+
+## 零基础构建教程
+
+新增 `docs/BUILDING.md`，使用中英文双语编写，并在 README 的“从源码运行 / Build from source”部分显著链接。教程按 Windows 新手可逐项照做的形式编排：
+
+1. 安装 Node.js LTS，并确认 `node` 与 `npm` 命令可用。
+2. 使用 Git 克隆仓库，或从 GitHub 下载源码 ZIP 并解压。
+3. 在项目目录打开 PowerShell。
+4. 执行 `npm install` 安装依赖。
+5. 执行 `npm start` 直接运行源码。
+6. 执行 `npm test` 验证功能。
+7. 执行 `npm run pack:win` 生成 Windows x64 便携版。
+8. 在 `dist/GokuGoku-win32-x64/` 中找到 `GokuGoku.exe`，整个目录需一起保留或压缩分享。
+
+教程必须明确当前产物是免安装便携版，而不是带安装向导的安装包；不能只复制单个 EXE。补充 PowerShell 执行位置、路径包含空格、依赖下载失败、构建目录不存在等常见问题。
 
 ## 截图
 
