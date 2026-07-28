@@ -167,14 +167,14 @@ test('release metadata and license meet the Windows packaging contract', () => {
 
   const packWin = packageJson.scripts['pack:win'];
   for (const required of [
-    '--app-version=1.1.0',
-    '--build-version=1.1.0',
     '--win32metadata.CompanyName=水分補給課',
     '--win32metadata.ProductName=水分補給課',
     '--asar',
   ]) {
     assert.ok(packWin.includes(required), `pack:win must include ${required}`);
   }
+  assert.doesNotMatch(packWin, /--(?:app|build)-version=/);
+  assert.equal(packageJson.engines.node, '>=22.12');
   for (const excluded of ['dist', 'node_modules', 'test', 'docs']) {
     assert.match(packWin, new RegExp(`--ignore=\\"\\^/${excluded}`), `pack:win must exclude ${excluded}`);
   }

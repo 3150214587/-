@@ -13,6 +13,10 @@
   <a href="#中文">中文</a> · <a href="#english">English</a>
 </p>
 
+<p align="center">
+  <a href="https://github.com/mosaic-dng/GokuGoku/releases/latest"><strong>下载最新版 / Download latest release</strong></a>
+</p>
+
 ## 界面截图 / Screenshots
 
 ### 主界面 / Main window
@@ -54,6 +58,8 @@ GokuGoku 是一款动森风格的 Windows 喝水提醒应用。“GokuGoku（ゴ
 当前项目可从源码直接运行，也可以自行打包成 Windows x64 免安装便携版。如果你从未使用过命令行，请看：
 
 **[零基础源码运行与 Windows 打包教程](docs/BUILDING.md)**
+
+维护者发布新版本时，请参阅 **[Windows 便携版发布说明](docs/RELEASING.md)**。
 
 最简步骤：
 
@@ -131,6 +137,8 @@ The app lives in the system tray and reminds you only during the working hours y
 You can run the project directly from source or package it as a portable Windows x64 application. If command-line tools are new to you, follow the step-by-step guide:
 
 **[Beginner-friendly source and Windows packaging guide](docs/BUILDING.md#english)**
+
+Maintainers publishing a new version should follow the **[Windows release guide](docs/RELEASING.md)**.
 
 Quick start:
 

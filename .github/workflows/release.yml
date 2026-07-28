@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Validate release tag
+        id: metadata
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $tag = $env:RELEASE_TAG
+          if ($tag -notmatch '^v\d+\.\d+\.\d+$') {
+            throw "Release tag '$tag' must use the stable v1.2.3 format."
+          }
+
+          $version = $tag.Substring(1)
+          $packageVersion = (Get-Content -Raw 'package.json' | ConvertFrom-Json).version
+          if ($version -ne $packageVersion) {
+            throw "Tag version $version does not match package version $packageVersion."
+          }
+
+          git fetch --no-tags origin '+refs/heads/main:refs/remotes/origin/main'
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Could not fetch origin/main for release validation.'
+          }
+
+          git merge-base --is-ancestor $env:GITHUB_SHA origin/main
+          if ($LASTEXITCODE -ne 0) {
+            throw "Release tag '$tag' is not attached to a commit on main."
+          }
+
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build Windows portable app
+        run: npm run pack:win
+
+      - name: Prepare release asset
+        id: asset
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.metadata.outputs.version }}
+        run: |
+          $version = $env:RELEASE_VERSION
+          $sourceDir = 'dist/GokuGoku-win32-x64'
+          $exePath = Join-Path $sourceDir 'GokuGoku.exe'
+          if (-not (Test-Path $exePath)) {
+            throw 'Windows portable build did not create GokuGoku.exe.'
+          }
+
+          $productVersion = (Get-Item $exePath).VersionInfo.ProductVersion
+          $expectedVersion = "^$([regex]::Escape($version))(?:\.0)?$"
+          if ($productVersion -notmatch $expectedVersion) {
+            throw "Executable product version $productVersion does not match release version $version."
+          }
+
+          $portableName = "GokuGoku-v$version-Windows-x64"
+          $portableDir = Join-Path 'dist' $portableName
+          $archivePath = Join-Path 'dist' "$portableName.zip"
+          Move-Item -LiteralPath $sourceDir -Destination $portableDir
+          Compress-Archive -LiteralPath $portableDir -DestinationPath $archivePath -CompressionLevel Optimal
+          "path=$archivePath" >> $env:GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_ASSET: ${{ steps.asset.outputs.path }}
+        run: |
+          gh release create $env:RELEASE_TAG $env:RELEASE_ASSET `
+            --verify-tag `
+            --generate-notes `
+            --title "GokuGoku $env:RELEASE_TAG"
