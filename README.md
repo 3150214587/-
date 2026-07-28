@@ -2,7 +2,7 @@
   <img src="assets/app.png" width="96" alt="GokuGoku icon">
 </p>
 
-<h1 align="center">水分補給課 GokuGoku</h1>
+<h1 align="center">咕咕嘎嘎喝水提醒器水分補給課 GokuGoku</h1>
 
 <p align="center">
   咕嘟咕嘟——专治上班族忘记喝水的 Windows 桌面小课<br>
