@@ -183,6 +183,12 @@ The hydration calculation is a simple everyday reference and is not medical advi
 
 ---
 
+## 友情链接 / Friends
+
+- [LINUX DO](https://linux.do)
+
+---
+
 ## License
 
 Released under the [MIT License](LICENSE).
